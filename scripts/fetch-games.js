@@ -18,7 +18,7 @@ function formatDate(date) {
 }
 
 async function fetchSportGames(sport, startDateStr, endDateStr) {
-  const url = `https://statsapi.mlb.com/api/v1/schedule?sportId=${sport.id}&startDate=${startDateStr}&endDate=${endDateStr}&hydrate=venue(location)`;
+  const url = `https://statsapi.mlb.com/api/v1/schedule?sportId=${sport.id}&startDate=${startDateStr}&endDate=${endDateStr}&hydrate=venue(location),game(tickets)`;
   console.log(`Fetching ${sport.name} (${sport.label}) from ${startDateStr} to ${endDateStr}...`);
   
   try {
@@ -48,6 +48,17 @@ async function fetchSportGames(sport, startDateStr, endDateStr) {
         const location = venueObj.location || {};
         const coords = location.defaultCoordinates || {};
         
+        // Extract ticket purchase link if available
+        let ticketUrl = null;
+        if (game.tickets && game.tickets.length > 0) {
+          for (const ticketObj of game.tickets) {
+            if (ticketObj.ticketLinks && ticketObj.ticketLinks.home) {
+              ticketUrl = ticketObj.ticketLinks.home;
+              break;
+            }
+          }
+        }
+        
         games.push({
           id: game.gamePk,
           date: game.gameDate,
@@ -63,7 +74,8 @@ async function fetchSportGames(sport, startDateStr, endDateStr) {
           lat: coords.latitude || null,
           lon: coords.longitude || null,
           status: game.status?.detailedState || "Scheduled",
-          timeTBD: game.status?.startTimeTBD || false
+          timeTBD: game.status?.startTimeTBD || false,
+          ticketUrl: ticketUrl
         });
       }
     }

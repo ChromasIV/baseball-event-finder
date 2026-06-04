@@ -225,6 +225,9 @@ function renderNextBatch() {
     };
     const tagClass = leagueClassMap[game.league] || 'btn-secondary';
 
+    // Fallback ticket link search on Google if direct URL is not available in DB
+    const finalTicketUrl = game.ticketUrl || `https://www.google.com/search?q=${encodeURIComponent(game.home + ' baseball tickets')}`;
+
     card.innerHTML = `
       <div class="game-card-header">
         <span class="league-tag ${tagClass}">${game.league}</span>
@@ -258,8 +261,11 @@ function renderNextBatch() {
         </div>
       </div>
       <div class="game-card-actions">
-        <a href="${getGoogleMapsUrl(game)}" target="_blank" rel="noopener" class="btn btn-secondary"><i class="fa-solid fa-diamond-turn-right"></i> Directions</a>
-        <a href="${getGoogleCalendarUrl(game)}" target="_blank" rel="noopener" class="btn btn-outline-primary"><i class="fa-solid fa-calendar-plus"></i> Cal invite</a>
+        <a href="${finalTicketUrl}" target="_blank" rel="noopener" class="btn btn-primary btn-tickets"><i class="fa-solid fa-ticket"></i> Buy Tickets</a>
+        <div class="card-action-subrow">
+          <a href="${getGoogleMapsUrl(game)}" target="_blank" rel="noopener" class="btn btn-secondary"><i class="fa-solid fa-diamond-turn-right"></i> Directions</a>
+          <a href="${getGoogleCalendarUrl(game)}" target="_blank" rel="noopener" class="btn btn-secondary"><i class="fa-solid fa-calendar-plus"></i> Add Cal</a>
+        </div>
       </div>
     `;
     

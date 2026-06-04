@@ -2,7 +2,7 @@
 
 A high-performance, automated web application that lists and filters Major League Baseball (MLB) and Minor League Baseball (MiLB) game events based on proximity, radius, and date ranges. 
 
-**Theme Version:** 1.0.0  
+**Theme Version:** 1.0.1  
 **Status:** Ready to deploy to GitHub Pages!
 
 ---
