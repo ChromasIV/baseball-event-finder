@@ -1,0 +1,42 @@
+name: Weekly Baseball Schedule Update
+
+on:
+  schedule:
+    # Run every Monday at 00:00 UTC
+    - cron: '0 0 * * 1'
+  workflow_dispatch:
+    # Allow manual triggering of the workflow from the Actions tab
+
+permissions:
+  contents: write # Needed to commit and push changes back to the repository
+
+jobs:
+  update-schedule:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Fetch Latest Games Schedule
+        run: |
+          node scripts/fetch-games.js
+
+      - name: Commit and Push Changes
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docs/data/games.json
+          
+          # Only commit if there are actual modifications in games.json
+          if ! git diff --cached --quiet; then
+            git commit -m "Auto-update baseball schedule (weekly run)"
+            git push
+          else
+            echo "No schedule changes detected. Skipping push."
+          fi

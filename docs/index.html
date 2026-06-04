@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Baseball Event Finder - Find MLB & MiLB Games Near You</title>
+  <meta name="description" content="Search upcoming Major and Minor League baseball games. Filter by your location, search radius, dates, and leagues.">
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Stylesheet -->
+  <link rel="stylesheet" href="style.css?v=1.0.0">
+  
+  <!-- FontAwesome for Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+  <div class="glow-container">
+    <div class="glow-orb glow-orb-1"></div>
+    <div class="glow-orb glow-orb-2"></div>
+  </div>
+
+  <header>
+    <div class="container header-container">
+      <div class="logo">
+        <i class="fa-solid fa-baseball-bat-ball logo-icon"></i>
+        <h1>Baseball Event Finder</h1>
+      </div>
+      <p class="subtitle">Discover MLB & MiLB games happening near you. Automatically updated weekly.</p>
+    </div>
+  </header>
+
+  <main class="container">
+    <!-- Search & Filter Controls -->
+    <section class="controls-panel card">
+      <h2 class="panel-title"><i class="fa-solid fa-sliders"></i> Filter Schedule</h2>
+      
+      <div class="controls-grid">
+        <!-- Location Column -->
+        <div class="control-group">
+          <label><i class="fa-solid fa-location-dot"></i> Base Location</label>
+          <div class="location-presets">
+            <select id="preset-city" aria-label="Select Preset City">
+              <option value="current">📍 Current Location</option>
+              <option value="40.7128,-74.0060">New York, NY</option>
+              <option value="34.0522,-118.2437">Los Angeles, CA</option>
+              <option value="41.8781,-87.6298">Chicago, IL</option>
+              <option value="39.9526,-75.1652">Philadelphia, PA</option>
+              <option value="42.3601,-71.0589">Boston, MA</option>
+              <option value="33.7490,-84.3880">Atlanta, GA</option>
+              <option value="37.7749,-122.4194">San Francisco, CA</option>
+              <option value="47.6062,-122.3321">Seattle, WA</option>
+              <option value="38.6270,-90.1994">St. Louis, MO</option>
+              <option value="29.7604,-95.3698">Houston, TX</option>
+            </select>
+            <button id="btn-geolocation" class="btn btn-secondary" title="Use Browser Location">
+              <i class="fa-solid fa-location-crosshairs"></i>
+            </button>
+          </div>
+          <div class="lat-lon-inputs">
+            <div>
+              <span class="coord-label">Lat:</span>
+              <input type="number" id="lat-input" step="0.0001" placeholder="Latitude" value="40.7128">
+            </div>
+            <div>
+              <span class="coord-label">Lon:</span>
+              <input type="number" id="lon-input" step="0.0001" placeholder="Longitude" value="-74.0060">
+            </div>
+          </div>
+          <span id="location-status" class="status-indicator">Detecting location...</span>
+        </div>
+
+        <!-- Radius Column -->
+        <div class="control-group">
+          <label for="radius-input"><i class="fa-solid fa-circle-notch"></i> Search Radius</label>
+          <div class="slider-container">
+            <input type="range" id="radius-input" min="10" max="500" step="5" value="100">
+            <span class="slider-value" id="radius-val">100 miles</span>
+          </div>
+          <span class="helper-text">Find games within this distance from base location</span>
+        </div>
+
+        <!-- Date Column -->
+        <div class="control-group">
+          <label><i class="fa-solid fa-calendar-days"></i> Dates (Today & Later)</label>
+          <div class="date-inputs">
+            <div>
+              <span class="date-label">From:</span>
+              <input type="date" id="start-date" aria-label="Start Date">
+            </div>
+            <div>
+              <span class="date-label">To:</span>
+              <input type="date" id="end-date" aria-label="End Date">
+            </div>
+          </div>
+          <span class="helper-text">Defaults to next 45 days</span>
+        </div>
+
+        <!-- Search Text Column -->
+        <div class="control-group">
+          <label for="search-text"><i class="fa-solid fa-magnifying-glass"></i> Team or Venue</label>
+          <div class="search-input-wrapper">
+            <input type="text" id="search-text" placeholder="Search Yankees, Fenway, Maine...">
+            <i class="fa-solid fa-magnifying-glass search-icon"></i>
+          </div>
+          <span class="helper-text">Filter by home/away teams, city, state, or stadium name</span>
+        </div>
+      </div>
+
+      <!-- Leagues Filter Row -->
+      <div class="leagues-row">
+        <label><i class="fa-solid fa-trophy"></i> Leagues</label>
+        <div class="leagues-badges">
+          <button class="badge-toggle active" data-sport="1">MLB</button>
+          <button class="badge-toggle active" data-sport="11">Triple-A</button>
+          <button class="badge-toggle active" data-sport="12">Double-A</button>
+          <button class="badge-toggle active" data-sport="13">High-A</button>
+          <button class="badge-toggle active" data-sport="14">Single-A</button>
+        </div>
+      </div>
+      
+      <!-- Sort Controls -->
+      <div class="sort-row">
+        <span class="sort-label">Sort by:</span>
+        <div class="sort-buttons">
+          <button id="sort-date" class="sort-btn active"><i class="fa-solid fa-calendar-day"></i> Date</button>
+          <button id="sort-distance" class="sort-btn"><i class="fa-solid fa-road"></i> Distance</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Results Section -->
+    <section class="results-container">
+      <div class="results-header">
+        <div id="results-count" class="results-count">Searching games...</div>
+      </div>
+
+      <!-- Loading State -->
+      <div id="loading" class="loader-box">
+        <div class="baseball-spinner"></div>
+        <p>Rounding the bases... Fetching game schedules...</p>
+      </div>
+
+      <!-- Empty State -->
+      <div id="empty-state" class="empty-box hidden">
+        <i class="fa-solid fa-baseball-bat-ball empty-icon"></i>
+        <h3>No Games Found</h3>
+        <p>Try widening your search radius, extending your date range, or selecting more leagues.</p>
+        <button id="btn-reset-filters" class="btn btn-primary">Reset Filters</button>
+      </div>
+
+      <!-- Games Grid -->
+      <div id="games-grid" class="games-grid"></div>
+
+      <!-- Load More Button -->
+      <div class="load-more-container">
+        <button id="btn-load-more" class="btn btn-primary hidden">Load More Games</button>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="container footer-content">
+      <p>&copy; 2026 Baseball Event Finder. Scheduled weekly database. Handcrafted with precision.</p>
+      <p>Data provided by MLB StatsAPI. This app is not affiliated with Major League Baseball.</p>
+    </div>
+  </footer>
+
+  <!-- App Script -->
+  <script src="app.js?v=1.0.0"></script>
+</body>
+</html>

@@ -1,0 +1,20 @@
+{
+  "name": "baseball-event-finder",
+  "version": "1.0.0",
+  "description": "Weekly automated Major and Minor League Baseball event finder based on location, radius, and dates.",
+  "main": "scripts/fetch-games.js",
+  "scripts": {
+    "fetch-data": "node scripts/fetch-games.js",
+    "start": "npx http-server docs -p 8080"
+  },
+  "keywords": [
+    "baseball",
+    "mlb",
+    "milb",
+    "event-finder",
+    "geolocation",
+    "haversine"
+  ],
+  "author": "",
+  "license": "ISC"
+}
