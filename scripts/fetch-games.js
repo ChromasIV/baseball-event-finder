@@ -99,10 +99,18 @@ async function main() {
   const endDateStr = formatDate(endDate);
   
   let allGames = [];
+  const seenGameIds = new Set();
   
   for (const sport of SPORTS) {
     const games = await fetchSportGames(sport, startDateStr, endDateStr);
-    allGames = allGames.concat(games);
+    for (const game of games) {
+      if (!seenGameIds.has(game.id)) {
+        seenGameIds.add(game.id);
+        allGames.push(game);
+      } else {
+        console.log(`[Duplicate] Filtered out duplicate game ${game.id}: ${game.away} at ${game.home}`);
+      }
+    }
     // Add a tiny delay between requests to be polite to the API
     await new Promise(resolve => setTimeout(resolve, 500));
   }
